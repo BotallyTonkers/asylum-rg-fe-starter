@@ -4,8 +4,12 @@ import SubTable from './SubTable';
 
 function TableRow(props) {
   const { columns, row, tableWidth, rowHeight } = props;
-  // row should be an object with keys for each column here;
-  // columns should be an array
+
+  // If row is not provided or columns are empty, return a fallback
+  if (!row || columns.length === 0) {
+    return <div className="table-row" style={{ width: tableWidth }}>No Data Available</div>;
+  }
+
   return (
     <div
       className="table-row"
@@ -17,27 +21,26 @@ function TableRow(props) {
       }}
     >
       {columns.map((property, idx) => {
-        if (row) {
-          if (typeof row[property] === 'object') {
-            return (
-              <SubTable
-                dataObject={row[property]}
-                rowHeight={rowHeight} // so for the SubTablesTable the row should be an object of objects
-                key={idx}
-              />
-            );
-          } else {
-            return (
-              <div  key={idx} style={{ overflow: 'hidden', flex: '1' }}>
-                <TableInnerSquare
-                  innerData={row[property]}
-                  rowHeight={rowHeight}
-                />
-              </div>
-            );
-          }
+        if (typeof row[property] === 'object') {
+          // If row[property] is an object, render a SubTable
+          return (
+            <SubTable
+              dataObject={row[property]}
+              rowHeight={rowHeight}
+              key={idx}
+            />
+          );
         } else {
-          return <></>;
+          // Otherwise, render TableInnerSquare
+          return (
+            <div key={idx} style={{ overflow: 'hidden', flex: '1' }}>
+              <TableInnerSquare
+                innerData={row[property]}
+                rowHeight={rowHeight}
+              />
+            </div>
+          );
+        }
       })}
     </div>
   );
